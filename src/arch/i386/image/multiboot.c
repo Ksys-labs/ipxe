@@ -53,7 +53,7 @@ FEATURE ( FEATURE_IMAGE, "MBOOT", DHCP_EB_FEATURE_MULTIBOOT, 1 );
  * physical addressing as per the multiboot specification.
  *
  */
-#define MAX_MODULES 8
+#define MAX_MODULES 32
 
 /**
  * Maximum combined length of command lines
@@ -378,6 +378,13 @@ static int multiboot_load_elf ( struct image *image, physaddr_t *entry,
 	return 0;
 }
 
+extern unsigned char *vbe_module;
+extern int ctrl_info_len;
+extern int mode_info_len;
+extern int mode_num;
+extern int pmif;
+extern int pmif_l;
+
 /**
  * Execute multiboot image
  *
@@ -412,6 +419,11 @@ static int multiboot_exec ( struct image *image ) {
 	if ( ( ( rc = multiboot_load_elf ( image, &entry, &max ) ) != 0 ) &&
 	     ( ( rc = multiboot_load_raw ( image, &hdr, &entry, &max ) ) != 0 ))
 		return rc;
+	
+	DBGC ( image, "MULTIBOOT entry=%lx max=%lx\n", entry, max );
+	
+	// TODO: add to comandline?
+	max = 0x40200000;
 
 	/* Populate multiboot information structure */
 	memset ( &mbinfo, 0, sizeof ( mbinfo ) );
@@ -424,6 +436,20 @@ static int multiboot_exec ( struct image *image ) {
 	snprintf ( mb_bootloader_name, sizeof ( mb_bootloader_name ),
 		   "iPXE %s", product_version );
 	mbinfo.boot_loader_name = virt_to_phys ( mb_bootloader_name );
+	
+	if (vbe_module)
+	{
+		mbinfo.flags |=  0x800;
+		
+		mbinfo.vbe_control_info = virt_to_bus(vbe_module);
+		mbinfo.vbe_mode_info = virt_to_bus(vbe_module) + ctrl_info_len;
+		
+		mbinfo.vbe_mode = mode_num;
+		mbinfo.vbe_interface_seg = (pmif >> 16) & 0xFFFF;
+		mbinfo.vbe_interface_off =  pmif        & 0xFFFF;
+		mbinfo.vbe_interface_len = pmif_l;
+	}
+	
 	if ( ( rc = multiboot_add_modules ( image, max, &mbinfo, mbmodules,
 					    ( sizeof ( mbmodules ) /
 					      sizeof ( mbmodules[0] ) ) ) ) !=0)

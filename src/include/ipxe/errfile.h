@@ -266,6 +266,9 @@ FILE_LICENCE ( GPL2_OR_LATER );
 #define ERRFILE_efi_snp_hii	      ( ERRFILE_OTHER | 0x00310000 )
 #define ERRFILE_readline	      ( ERRFILE_OTHER | 0x00320000 )
 
+#define ERRFILE_vbeset		      ( ERRFILE_OTHER | 0x00330000 )
+
+
 /** @} */
 
 #endif /* _IPXE_ERRFILE_H */

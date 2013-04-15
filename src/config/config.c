@@ -253,7 +253,9 @@ REQUIRE_OBJECT ( sync_cmd );
 #ifdef NSLOOKUP_CMD
 REQUIRE_OBJECT ( nslookup_cmd );
 #endif
-
+#ifdef VBESET_CMD
+REQUIRE_OBJECT ( vbeset_cmd );
+#endif
 /*
  * Drag in miscellaneous objects
  *

@@ -127,6 +127,7 @@ FILE_LICENCE ( GPL2_OR_LATER );
 //#define PXE_CMD		/* PXE commands */
 //#define REBOOT_CMD		/* Reboot command */
 //#define IMAGE_TRUST_CMD	/* Image trust management commands */
+#define VBESET_CMD
 
 /*
  * ROM-specific options
